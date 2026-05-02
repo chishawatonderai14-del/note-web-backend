@@ -55,7 +55,13 @@ const pinNote = async (req, res) => {
             }
         });
         updatedNote = await createNoteResponse(updatedNote);
-        res.status(200).json({message: "Noted Pinned Succefully", note: updatedNote});
+        let message = "";
+        if (pinned){
+            message = "Note Unpinned Succefully"
+        }else {
+            message = "Noted Pinned Succefully";
+        }
+        res.status(200).json({message: message, note: updatedNote});
     } catch(err) {
         res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
     }
