@@ -36,10 +36,29 @@ const createNote = async (req, res) => {
         res.status(500).json({ error: 'Failed to create note'});
     }
 }
+//==================================== GET NOTES ===============================
 const getNotes = async (req, res) => {
     const notes = await getAllNotes();
 
     res.status(200).json({ notes: notes});
+}
+//============================== PIN NOTE =====================
+const pinNote = async (req, res) => {
+    try{
+        const { noteId, pinned } = req.body;
+        let updatedNote = await prisma.note.update({
+            where: {
+                id: noteId 
+            },
+            data: {
+                pinned: !pinned
+            }
+        });
+        updatedNote = await createNoteResponse(updatedNote);
+        res.status(200).json({message: "Update was successful", note: updatedNote});
+    } catch(err) {
+        res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
+    }
 }
 const deleteNote = async (req, res) => {
     const { id } = req.params;
@@ -56,5 +75,6 @@ const deleteNote = async (req, res) => {
 module.exports = {
     createNote,
     getNotes,
-    deleteNote
+    deleteNote,
+    pinNote
 }
