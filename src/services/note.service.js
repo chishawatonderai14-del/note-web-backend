@@ -4,17 +4,19 @@ const {
 } = require('../utils/noteHelper');
 //============================== Creating Note =========================
 const createNoteResponse = async (data) => {
+    const category = await getCategory(data.categoryId);
     const response = {
         id : data.id,
         title: data.title,
         content: data.content,
-        category: await getCategoryName(data.categoryId),
+        icon: category.icon,
+        category: category.name,
         createdAt: formatDate(data.createdAt),
         updatedAt: formatDate(data.updateAt)
     };
+    console.log(response);
     return response;
 };
-
 const getCategoryId = async (category) => {
     const categoryList = await prisma.category.findMany({
         where: {
@@ -23,13 +25,13 @@ const getCategoryId = async (category) => {
     });
     return categoryList[0]?.id;
 };
-const getCategoryName = async (categoryId) => {
+const getCategory = async (categoryId) => {
     const categoryList = await prisma.category.findMany({
         where: {
             id: categoryId
         }
     });
-    return categoryList[0].name;
+    return categoryList[0];
 }
 const ReqValid = (note) => {
     if (!note.title || !note.content || !note.category) {
