@@ -10,6 +10,7 @@ const createNoteResponse = async (data) => {
         title: data.title,
         content: data.content,
         icon: category.icon,
+        pinned: data.pinned,
         category: category.name,
         createdAt: formatDate(data.createdAt),
         updatedAt: formatDate(data.updateAt)
