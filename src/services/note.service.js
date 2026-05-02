@@ -56,6 +56,7 @@ const pushNote = async (note) => {
         data: {
             title: note.title,
             content: note.content,
+            pinned: note.pinned,
             categoryId: categoryId
         }
     });

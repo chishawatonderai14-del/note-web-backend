@@ -11,10 +11,11 @@ const {
 // the createNote controller
 const createNote = async (req, res) => {
     try{
-        const { title, content, category } = req.body;
+        const { title, content, pinned, category } = req.body;
         const reqNote = {
             title: title,
             content: content,
+            pinned: pinned,
             category: category
         };
         // check if req is valid 
