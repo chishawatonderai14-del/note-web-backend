@@ -89,5 +89,7 @@ module.exports = {
     //============================== Deleting Note =========================
 
     //============================== Getting Notes =========================
-    getAllNotes
+    getAllNotes,
+    // export for category service
+    getCategory
 }
