@@ -34,7 +34,7 @@ const getCategories = async (req, res) => {
         }
     });
     const formatedCategory = await Promise.all(notes.map(note => createCategoryResponse(note)))
-    res.json({message: await sortCategory(formatedCategory)});
+    res.json({categories: await sortCategory(formatedCategory)});
     
 }
 
