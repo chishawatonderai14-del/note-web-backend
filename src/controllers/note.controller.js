@@ -55,7 +55,6 @@ const getNotes = async (req, res) => {
 const pinNote = async (req, res) => {
     try{
         const { noteId, pinned } = req.body;
-        if (!noteId || !pinned){ res.status(400).json({error: "No data was received"})}
         let updatedNote = await prisma.note.update({
             where: {
                 id: noteId 

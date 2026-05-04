@@ -226,7 +226,6 @@ const createActivityResponse = (activity) => {
     }
 }
 const formatActivities = async (activityList) => {
-    console.log('can');
     try {
         return await Promise.all(activityList.map(activity => createActivityResponse(activity)));
     }catch(err){
