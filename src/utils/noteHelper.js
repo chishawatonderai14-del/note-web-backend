@@ -5,7 +5,6 @@ const formatDate =  (date) => {
     console.log(date)
     let d = new Date(date).toISOString().slice(0, 16);
     let time = d.slice(11,16);
-    console.log(d);
     let day = parseInt(d.slice(8,10));
     let month = parseInt(d.slice(5,7));
     month = getMonth(month);

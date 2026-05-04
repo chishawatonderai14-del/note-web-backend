@@ -19,7 +19,6 @@ const createNoteResponse = async (data) => {
             createdAt: formatDate(data.createdAt),
             updatedAt: formatDate(data.updateAt)
         };
-        console.log(response);
         return response;
     }catch(err) {
         console.log("!! ERROR IN FUNCTION: createNoteResponse File: src/services/note.service.js UNDER: CREATE NOTE");
