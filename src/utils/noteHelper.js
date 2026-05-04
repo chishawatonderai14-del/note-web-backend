@@ -1,12 +1,16 @@
 const prisma = require('../prisma/client');
 
+//============================== TIME FORMATING =========================
 const formatDate =  (date) => {
-    let d = new Date(date).toISOString().slice(0, 10);
+    console.log(date)
+    let d = new Date(date).toISOString().slice(0, 16);
+    let time = d.slice(11,16);
+    console.log(d);
     let day = parseInt(d.slice(8,10));
     let month = parseInt(d.slice(5,7));
     month = getMonth(month);
     let year = parseInt(d.slice(0,4));
-    d = month + " " + day + ", " + year;
+    d = time + "T" +month + " " + day + ", " + year;
     return d;
 }
 const getMonth = (num) => {

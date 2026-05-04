@@ -1,21 +1,26 @@
-const { Kafka} = require('kafkajs');
-const eventType = require('../utils/eventType');
+const { Kafka, Partitioners} = require('kafkajs');
 
 const kafka = new Kafka({
   clientId: 'note-app',
-  brokers: ['kafka:9092']
+  brokers: ['localhost:29092']
 });
-const producer = kafka.producer();
-const sendEvent = async () => {
+const producer = kafka.producer({
+  createPartitioner: Partitioners.LegacyPartitioner
+});
+const sendEvent = async (noteEvent) => {
   await producer.connect();
   await producer.send({
     topic: "note-events",
     messages: [
       {
-        key: '1',
+        key: String(noteEvent.eventId),
         value: JSON.stringify({
-          eventType: eventType.NOTE_CREATED,
-          content: 'Hello, this is the test note content.'
+          eventType: noteEvent.eventType,
+          eventId: noteEvent.eventId,
+          icon: noteEvent.icon,
+          action: noteEvent.action,
+          textBody: noteEvent.textBody,
+          timestamp: noteEvent.timestamp
         })
       }
     ]

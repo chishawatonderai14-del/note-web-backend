@@ -3,7 +3,7 @@ services:
     build: .
     container_name: backend
     ports:
-      - "3000:3000"
+      - "3003:3003"
     env_file:
       - .env
     depends_on:
@@ -11,9 +11,11 @@ services:
 
   consumer:
     build: .
-    command: ["sh", "-c", "sleep 10 && node src/services/consumer.js"]
+    command: ["sh", "-c", "sleep 10 && node src/services/activityConsumer.js"]
     depends_on:
       - kafka
+    env_file:
+      - .env
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
@@ -26,11 +28,16 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
+      - "29092:29092" # testing port for terminal access to consumers 
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1

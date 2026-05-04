@@ -1,4 +1,5 @@
 const { Kafka } = require('kafkajs');
+const prisma = require('../prisma/client');
 
 const kafka = new Kafka({
   clientId: 'note-app',
@@ -14,6 +15,16 @@ const run = async () => {
   await consumer.run({
     eachMessage: async ({ message }) => {
       const noteEvent = JSON.parse(message.value.toString());
+      const result = await prisma.activityLog.create({
+        data: {
+          eventType: noteEvent.eventType,
+          eventId: noteEvent.eventId,
+          icon : noteEvent.icon,
+          action: noteEvent.action,
+          textBody: noteEvent.textBody,
+          timestamp: noteEvent.timestamp
+        }
+      })
       console.log("Received event: ", noteEvent);
     }
   });

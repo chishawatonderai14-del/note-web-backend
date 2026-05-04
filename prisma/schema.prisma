@@ -17,7 +17,7 @@ model Note {
   content String
   pinned Boolean @default(false)
   category Category @relation(fields: [categoryId], references: [id])
-  categoryId Int 
+  categoryId Int
   createdAt DateTime @default(now())
   updateAt DateTime @default(now())
 }
@@ -32,6 +32,10 @@ model Category {
 model ActivityLog {
   id Int @id @default(autoincrement())
   eventType String
-  noteId Int 
-  timestamp DateTime @default(now())
+  icon String
+  action String 
+  textBody String
+  eventId Int 
+  timestamp DateTime 
+  createdAt DateTime @default(now())
 }
