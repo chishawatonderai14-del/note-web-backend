@@ -16,8 +16,8 @@ const createNoteResponse = async (data) => {
             icon: category.icon,
             pinned: data.pinned,
             category: category.name,
-            createdAt: formatDate(data.createdAt),
-            updatedAt: formatDate(data.updateAt)
+            createdAt: data.createdAt,
+            updatedAt: data.updateAt
         };
         return response;
     }catch(err) {
@@ -219,7 +219,7 @@ const createActivityResponse = (activity) => {
             action: activity.action,
             textBody: activity.textBody,
             icon: activity.icon,
-            timestamp: formatDate(activity.timestamp)
+            timestamp: activity.timestamp
         }
     }catch (err) {
         console.log("!! ERROR IN FUNCTION: createActivityResponse File: src/services/note.service.js UNDER GETTING ACTIVITIES");

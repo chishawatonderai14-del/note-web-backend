@@ -9,8 +9,8 @@ const formatDate =  (date) => {
     let month = parseInt(d.slice(5,7));
     month = getMonth(month);
     let year = parseInt(d.slice(0,4));
-    d = time + "T" +month + " " + day + ", " + year;
-    return d;
+    return time + "T" +month + " " + day + ", " + year;
+
 }
 const getMonth = (num) => {
     if (num >= 1 && num <= 12){
