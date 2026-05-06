@@ -200,7 +200,7 @@ const getEventDetails = (item, eventType) => {
             case "addToFavourite":
                 return { 
                     eventType: eventTypes.NOTE_CREATED,
-                    icon: "star",
+                    icon: "favourite",
                     action: "Added to Favorites " +  '"' + item.title + '"',
                     textBody: "You add a note to favourites"
                 }
