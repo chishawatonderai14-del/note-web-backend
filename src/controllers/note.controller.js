@@ -6,7 +6,7 @@ const {
     ReqValid,
     pushNote,
     getAllNotes,
-    createActivityResponse,
+    createNoteEvent,
     formatActivities,
     sortCategory
 } = require('../services/note.service');
@@ -20,7 +20,7 @@ const createNote = async (req, res) => {
             content: content,
             pinned: pinned,
             category: category
-        };
+        }; 
         // check if req is valid 
         if (!ReqValid(reqNote)) {
             res.status(400).json({ error: 'No heading or content provided'});
@@ -39,6 +39,7 @@ const createNote = async (req, res) => {
         // Send event to Kafka
         //await sendEvent(noteEvent);
     } catch(err) {
+        console.log(err);
         res.status(500).json({ error: 'Failed to create note'});
     }
 }

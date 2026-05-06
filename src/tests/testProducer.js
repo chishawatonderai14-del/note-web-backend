@@ -1,4 +1,5 @@
 const { sendEvent } = require('../services/producer');
+const { createNoteEvent } = require('../services/note.service');
 const data = {
     eventType: "NOTE_CREATED",
     eventId: 1,
@@ -7,4 +8,11 @@ const data = {
     textBody: "You created a note",
     timestamp: new Date()
 };
-sendEvent(data);
+const note = {
+    id: 45,
+    title: "Testing Events",
+    content: "new content",
+    pinned: false,
+    createdAt: new Date()
+}
+sendEvent(createNoteEvent(note, "createNote"));

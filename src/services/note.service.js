@@ -1,6 +1,6 @@
 //============================== IMPORTS =========================
 const prisma = require('../prisma/client');
-const { eventTypes } = require('../utils/eventType');
+const eventTypes = require('../utils/eventType');
 const {
     formatDate
 } = require('../utils/noteHelper');
@@ -199,7 +199,7 @@ const getEventDetails = (item, eventType) => {
                 }
             case "addToFavourite":
                 return { 
-                    eventType: eventTypes.NOTE_CREATED,
+                    eventType: eventTypes.NOTE_UPDATED,
                     icon: "favourite",
                     action: "Added to Favorites " +  '"' + item.title + '"',
                     textBody: "You add a note to favourites"
@@ -208,6 +208,7 @@ const getEventDetails = (item, eventType) => {
             return null;
         }
     } catch(err) {
+        console.log(err);
         console.log("!! ERROR IN FUNCTION: getEventDetails File: src/services/note.service.js UNDER EVENT HELPER");
     }
 }
@@ -247,5 +248,7 @@ module.exports = {
     //============================== GETTING ACTIVITIES =========================
     formatActivities,
     //============================== GETTING CATEGORY =========================
-    sortCategory
+    sortCategory,
+    //============================== EVENTS =========================
+    createNoteEvent
 }
