@@ -1,7 +1,7 @@
 //============================== IMPORTS =====================
 const { parse } = require('dotenv');
 const prisma = require('../prisma/client');
-//const { sendEvent } = require('../services/producer');
+const { sendEvent } = require('../services/producer');
 const {
     createNoteResponse,
     ReqValid,
