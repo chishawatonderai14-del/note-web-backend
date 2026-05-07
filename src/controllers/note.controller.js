@@ -1,4 +1,5 @@
 //============================== IMPORTS =====================
+const { parse } = require('dotenv');
 const prisma = require('../prisma/client');
 //const { sendEvent } = require('../services/producer');
 const {
@@ -33,7 +34,7 @@ const updateNotes = async (req, res) => {
         // update the note
         let note = await prisma.note.update({
             where: {
-                id: 126,
+                id: parseInt(id),
             },
             data: {
                 title: title,
@@ -53,7 +54,7 @@ const updateNotes = async (req, res) => {
             {message: 'Note updated successfully', note: note}
         );
         // Send event to Kafka
-        //await sendEvent(noteEvent);
+        await sendEvent(noteEvent);
     } catch(err) {
         console.log(err);
         res.status(500).json({ error: 'Failed to update note', message: err});
@@ -85,7 +86,7 @@ const createNote = async (req, res) => {
             {message: 'Note created successfully', note: note}
         );
         // Send event to Kafka
-        //await sendEvent(noteEvent);
+        await sendEvent(noteEvent);
     } catch(err) {
         console.log(err);
         res.status(500).json({ error: 'Failed to create note'});
@@ -113,6 +114,7 @@ const pinNote = async (req, res) => {
             }
         });
         updatedNote = await createNoteResponse(updatedNote);
+        // format note
         let message = "";
         if (pinned){
             message = "Note Unpinned Succefully"
@@ -120,6 +122,9 @@ const pinNote = async (req, res) => {
             message = "Noted Pinned Succefully";
         }
         res.status(200).json({message: message, note: updatedNote});
+        //kafka event activitity
+        const noteEvent = createNoteEvent(updatedNote, "updatedNote");
+        await sendEvent(noteEvent);
     } catch(err) {
         res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
     }
@@ -144,6 +149,8 @@ const addFav = async (req, res) => {
             message = "Noted Added To Favourites";
         }
         res.status(200).json({message: message, note: updatedNote});
+        const noteEvent = createNoteEvent(updatedNote, "addToFavourite");
+        await sendEvent(noteEvent);
     } catch(err) {
         res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
     }
@@ -161,6 +168,8 @@ const deleteNote = async (req, res) => {
             }
         });
         res.status(200).json({ message: 'Note deleted successfully', note: note});
+        const noteEvent = createNoteEvent(note, "deleteNote");
+        await sendEvent(noteEvent);
     } catch(err) {
         res.status(500).json({error: "Failed to delete note"});
     }  
