@@ -2,7 +2,7 @@ const { Kafka, Partitioners} = require('kafkajs');
 
 const kafka = new Kafka({
   clientId: 'note-app',
-  brokers: ['localhost:29092']
+  brokers: ['kafka:9092']
 });
 const producer = kafka.producer({
   createPartitioner: Partitioners.LegacyPartitioner
