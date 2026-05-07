@@ -15,6 +15,8 @@ const createNoteResponse = async (data) => {
             content: data.content,
             icon: category.icon,
             pinned: data.pinned,
+            favourite: data.favourite,
+            trash: data.trash,
             category: category.name,
             createdAt: formatDate(data.createdAt),
             updatedAt: formatDate(data.updateAt)
@@ -27,7 +29,7 @@ const createNoteResponse = async (data) => {
 
 const ReqValid = (note) => {
     try{
-        if (!note.title || !note.content || !note.category) {
+        if (!note.content || !note.category) {
             return false;
         }else {
             return true
@@ -58,13 +60,14 @@ const pushNote = async (note) => {
             data: {
                 title: note.title,
                 content: note.content,
+                favourite: note.favourite,
                 pinned: note.pinned,
                 categoryId: categoryId
             }
         });
-    }catch(err){
+    }catch(err){ 
         console.log("!! ERROR IN FUNCTION: pushNote File: src/services/note.service.js UNDER: CREATE NOTE");
-    }
+    } 
 }
 
 //============================== GET CATEGORY =========================
@@ -240,7 +243,8 @@ module.exports = {
     ReqValid,
     pushNote,
     //============================== UPDATING NOTE =========================
- 
+
+    getCategoryId,
     //============================== DELETING NOTE  =========================
 
     //============================== GETTING NOTES =========================

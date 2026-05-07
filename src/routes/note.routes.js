@@ -5,7 +5,10 @@ const {
     getCategories,
     getNotes,
     deleteNote,
-    pinNote
+    pinNote,
+    addFav,
+    getCateg,
+    updateNotes
 } = require('../controllers/note.controller');
 
 // The get note route
@@ -15,5 +18,8 @@ router.delete('/delete-note/:id', deleteNote);
 router.put('/pin-note', pinNote);
 router.get('/get-categories', getCategories);
 router.get('/get-activities', getActivities);
+router.put('/add-fav', addFav);
+router.get('/get-categ', getCateg);
+router.put('/update-note', updateNotes);
 
 module.exports = router;

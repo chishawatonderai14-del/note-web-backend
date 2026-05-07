@@ -8,22 +8,71 @@ const {
     getAllNotes,
     createNoteEvent,
     formatActivities,
-    sortCategory
+    sortCategory,
+    getCategoryId
 } = require('../services/note.service');
 
+//============================== UPDATE NOTE =====================
+const updateNotes = async (req, res) => {
+    try{
+        const { id, title, content, pinned, favourite, trash, category } = req.body;
+        const reqNote = {
+            id: id,
+            title: title,
+            favourite: favourite,
+            trash: trash,
+            content: content,
+            pinned: pinned, 
+            category: category
+        };  
+        // check if req is valid 
+        if (!ReqValid(reqNote)) {
+            res.status(400).json({ error: 'content provided'});
+        }
+        const categoryId = await getCategoryId(category);
+        // update the note
+        let note = await prisma.note.update({
+            where: {
+                id: 126,
+            },
+            data: {
+                title: title,
+                content: content,
+                categoryId: categoryId,
+                favourite: favourite,
+                pinned: pinned,
+                trash: trash
+            }
+        });
+        // create noteEvent 
+        const noteEvent = createNoteEvent(note, "updateNote");
+        // format note
+        console.log(noteEvent);
+        note = await createNoteResponse(note);
+        res.status(201).json(
+            {message: 'Note updated successfully', note: note}
+        );
+        // Send event to Kafka
+        //await sendEvent(noteEvent);
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({ error: 'Failed to update note', message: err});
+    }
+}
 //============================== CREATE NOTE =====================
 const createNote = async (req, res) => {
     try{
-        const { title, content, pinned, category } = req.body;
+        const { title, content, pinned, favourite, category } = req.body;
         const reqNote = {
             title: title,
+            favourite: favourite,
             content: content,
-            pinned: pinned,
+            pinned: pinned, 
             category: category
         }; 
         // check if req is valid 
         if (!ReqValid(reqNote)) {
-            res.status(400).json({ error: 'No heading or content provided'});
+            res.status(400).json({ error: 'content provided'});
         }
 
         // create the note
@@ -32,7 +81,6 @@ const createNote = async (req, res) => {
         const noteEvent = createNoteEvent(note, "createNote");
         // format note
         note = await createNoteResponse(note);
-        
         res.status(201).json(
             {message: 'Note created successfully', note: note}
         );
@@ -71,7 +119,31 @@ const pinNote = async (req, res) => {
         }else {
             message = "Noted Pinned Succefully";
         }
-        //res.status(200).json({message: message, note: updatedNote});
+        res.status(200).json({message: message, note: updatedNote});
+    } catch(err) {
+        res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
+    }
+}
+//============================== ADD FAVOURITE NOTE =====================
+const addFav = async (req, res) => {
+    try{
+        const { noteId, favourite } = req.body;
+        let updatedNote = await prisma.note.update({
+            where: {
+                id: noteId 
+            },
+            data: {
+                favourite: !favourite
+            }
+        });
+        updatedNote = await createNoteResponse(updatedNote);
+        let message = "";
+        if (favourite){
+            message = "Note Removed From Favourites"
+        }else {
+            message = "Noted Added To Favourites";
+        }
+        res.status(200).json({message: message, note: updatedNote});
     } catch(err) {
         res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
     }
@@ -91,7 +163,7 @@ const deleteNote = async (req, res) => {
         res.status(200).json({ message: 'Note deleted successfully', note: note});
     } catch(err) {
         res.status(500).json({error: "Failed to delete note"});
-    }
+    }  
 }
 //============================== GET USER ACTIVITY =====================
 const getActivities = async (req, res) => {
@@ -124,11 +196,28 @@ const getCategories = async (req, res) => {
         res.status(500).json({error: "Failed to retrive Categories"});
     }
 }
+const getCateg = async (req, res) => {
+    try {
+        const category = await prisma.category.findMany({
+            orderBy: {
+                id: 'desc'
+            }
+        });
+        const formatedCategory = category;
+        res.status(200).json({message: "Categories Retrived Successfully",categories: formatedCategory});
+
+    }catch (err) {
+        res.status(500).json({error: "Failed to retrive Categories"});
+    }
+}
 module.exports = {
     createNote,
     getNotes,
     deleteNote,
     pinNote,
+    addFav,
     getActivities,
-    getCategories 
+    getCategories ,
+    getCateg,
+    updateNotes
 }
