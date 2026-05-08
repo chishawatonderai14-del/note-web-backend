@@ -48,7 +48,6 @@ const updateNotes = async (req, res) => {
         // create noteEvent 
         const noteEvent = createNoteEvent(note, "updateNote");
         // format note
-        console.log(noteEvent);
         note = await createNoteResponse(note);
         res.status(201).json(
             {message: 'Note updated successfully', note: note}
@@ -105,7 +104,7 @@ const getNotes = async (req, res) => {
 const pinNote = async (req, res) => {
     try{
         const { noteId, pinned } = req.body;
-        let updatedNote = await prisma.note.update({
+        const note = await prisma.note.update({
             where: {
                 id: noteId 
             },
@@ -113,7 +112,7 @@ const pinNote = async (req, res) => {
                 pinned: !pinned
             }
         });
-        updatedNote = await createNoteResponse(updatedNote);
+        updatedNote = await createNoteResponse(note);
         // format note
         let message = "";
         if (pinned){
@@ -123,7 +122,7 @@ const pinNote = async (req, res) => {
         }
         res.status(200).json({message: message, note: updatedNote});
         //kafka event activitity
-        const noteEvent = createNoteEvent(updatedNote, "updatedNote");
+        const noteEvent = createNoteEvent(note, "updatedNote");
         await sendEvent(noteEvent);
     } catch(err) {
         res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
@@ -133,7 +132,7 @@ const pinNote = async (req, res) => {
 const addFav = async (req, res) => {
     try{
         const { noteId, favourite } = req.body;
-        let updatedNote = await prisma.note.update({
+        const note = await prisma.note.update({
             where: {
                 id: noteId 
             },
@@ -141,7 +140,7 @@ const addFav = async (req, res) => {
                 favourite: !favourite
             }
         });
-        updatedNote = await createNoteResponse(updatedNote);
+        let updatedNote = await createNoteResponse(note);
         let message = "";
         if (favourite){
             message = "Note Removed From Favourites"
@@ -149,7 +148,7 @@ const addFav = async (req, res) => {
             message = "Noted Added To Favourites";
         }
         res.status(200).json({message: message, note: updatedNote});
-        const noteEvent = createNoteEvent(updatedNote, "addToFavourite");
+        const noteEvent = createNoteEvent(note, "addToFavourite");
         await sendEvent(noteEvent);
     } catch(err) {
         res.status(500).json({error: "!!NOTE UPDATE FAILED!!"});
