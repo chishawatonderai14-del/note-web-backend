@@ -1,5 +1,8 @@
 //============================== IMPORTS =====================
+require('dotenv').config;
 const { parse } = require('dotenv');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const prisma = require('../prisma/client');
 const { sendEvent } = require('../services/producer');
 const {
@@ -12,6 +15,75 @@ const {
     sortCategory,
     getCategoryId
 } = require('../services/note.service');
+
+//============================== Auth Controllers =====================
+const login = async (req, res) => {
+    try{
+        const { name, email, password } = req.body;
+        if (!name || !email || !password ) return res.status(400).json({message: "No data Provided."});
+        // check email 
+        const user = await prisma.user.findUnique({
+            where: {
+                email: email 
+            }
+        });
+        console.log(user);
+        if (!user) return res.status(404).json({message: "User not found!"});
+        const verifyPassword = await bcrypt.compare(
+            password, 
+            user.password
+        );
+        if (!verifyPassword) return res.status(401).json({message: "Invalid credentials"});
+        // create the JWT token
+        const token = jwt.sign(user, process.env.JWT_SECRET, {expiresIn: '7d'});
+        const {password: _, ...userNoPassword} = user;
+        res.status(200).json(
+            {
+                token,
+                userNoPassword
+            }
+        ); 
+    
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error: "Failed to login!!", message: err});
+    }
+}
+const signup = async (req, res) => {
+    try{
+        const { name, email, password } = req.body;
+        if (!name || !email || !password ) return res.status(400).json({message: "No data Provided."});
+        // check email 
+        const checkEmail = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        });
+
+        if (checkEmail) return res.status(400).json({message: "email already used", error: checkEmail});
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const {password: _, user} = await prisma.user.create({
+            data: {
+                name: name,
+                email: email,
+                role: "user",
+                password: hashedPassword
+            }
+        });
+        // create the JWT token
+        const token = jwt.sign(user, process.env.JWT_SECRET, {expiresIn: '7d'});
+        res.status(200).json(
+            {
+                token,
+                user
+            }
+        );
+    
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error: "Failed to login!!", message: err});
+    }
+}
 
 //============================== UPDATE NOTE =====================
 const updateNotes = async (req, res) => {
@@ -62,11 +134,12 @@ const updateNotes = async (req, res) => {
 //============================== CREATE NOTE =====================
 const createNote = async (req, res) => {
     try{
-        const { title, content, pinned, favourite, category } = req.body;
+        const { title, content, pinned, userId, favourite, category } = req.body;
         const reqNote = {
             title: title,
             favourite: favourite,
             content: content,
+            userId: userId,
             pinned: pinned, 
             category: category
         }; 
@@ -94,7 +167,8 @@ const createNote = async (req, res) => {
 //==================================== GET NOTES ===============================
 const getNotes = async (req, res) => {
     try{
-        const notes = await getAllNotes();
+        const {userId} = req.body;
+        const notes = await getAllNotes(userId);
         res.status(200).json({message: "Successfully retrieved notes", notes: notes});
     }catch(err){
         res.status(500).json({error: "Failed to retrive notes"});
@@ -176,7 +250,11 @@ const deleteNote = async (req, res) => {
 //============================== GET USER ACTIVITY =====================
 const getActivities = async (req, res) => {
     try{
+        const {userId} = req.body;
         const activities = await prisma.activityLog.findMany({
+            where: {
+                userId: userId
+            },
             orderBy: {
                 id: 'desc'
             }
@@ -227,5 +305,7 @@ module.exports = {
     getActivities,
     getCategories ,
     getCateg,
-    updateNotes
+    updateNotes,
+    login,
+    signup
 }

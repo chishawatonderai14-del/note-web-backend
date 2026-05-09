@@ -61,6 +61,7 @@ const pushNote = async (note) => {
                 title: note.title,
                 content: note.content,
                 favourite: note.favourite,
+                userId: note.userId,
                 pinned: note.pinned,
                 categoryId: categoryId
             }
@@ -139,9 +140,12 @@ const sortCategory = async (categoryList) => {
 
 
 //============================== GETTING ALL NOTES =========================
-const getAllNotes = async () => {
+const getAllNotes = async (userId) => {
     try{
         let allNotes = await prisma.note.findMany({
+            where: {
+                userId: userId
+            },
             orderBy: {
                 id: 'desc'
             }

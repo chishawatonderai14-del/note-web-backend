@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const verifyValid = require('../middleware/authMiddleware');
 const { 
     createNote,
     getActivities,
@@ -8,18 +9,21 @@ const {
     pinNote,
     addFav,
     getCateg,
-    updateNotes
+    updateNotes,
+    login,
+    signup
 } = require('../controllers/note.controller');
 
 // The get note route
-router.post('/create-note', createNote);
-router.get('/get-notes', getNotes);
-router.delete('/delete-note/:id', deleteNote);
-router.put('/pin-note', pinNote);
-router.get('/get-categories', getCategories);
-router.get('/get-activities', getActivities);
-router.put('/add-fav', addFav);
-router.get('/get-categ', getCateg);
-router.put('/update-note', updateNotes);
-
+router.post('/create-note',verifyValid, createNote);
+router.get('/get-notes', verifyValid, getNotes); // checked
+router.delete('/delete-note/:id', verifyValid, deleteNote);
+router.put('/pin-note', verifyValid, pinNote);
+router.get('/get-categories', verifyValid, getCategories);
+router.get('/get-activities', verifyValid, getActivities);
+router.put('/add-fav', verifyValid, addFav);
+router.get('/get-categ', verifyValid, getCateg);
+router.put('/update-note', verifyValid, updateNotes);
+router.post('/login', login);
+router.post('/signup', signup);
 module.exports = router;
