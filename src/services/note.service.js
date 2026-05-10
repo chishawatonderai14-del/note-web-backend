@@ -142,9 +142,10 @@ const sortCategory = async (categoryList) => {
 //============================== GETTING ALL NOTES =========================
 const getAllNotes = async (userId) => {
     try{
+        
         let allNotes = await prisma.note.findMany({
             where: {
-                userId: userId
+                userId: parseInt(userId)
             },
             orderBy: {
                 id: 'desc'
@@ -152,6 +153,7 @@ const getAllNotes = async (userId) => {
         });
         return await Promise.all(allNotes.map(note => createNoteResponse(note)));
     }catch(err) {
+        console.log(err);
         console.log("!! ERROR IN FUNCTION: getAllNotes File: src/services/note.service.js UNDER GETTING ALL NOTES");   
     }
 }

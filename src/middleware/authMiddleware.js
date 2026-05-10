@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const verifyValid = async (req, res, next) => {
     try {
-        const authHeader = req.headers.authorisation;
+        const authHeader = req.headers.authorization;
         if (!authHeader) return res.status(401).json({message: 'no token'});
         // Extract token
         const token = authHeader.split(' ')[1];

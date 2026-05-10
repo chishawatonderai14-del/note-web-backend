@@ -16,11 +16,11 @@ const {
 
 // The get note route
 router.post('/create-note',verifyValid, createNote);
-router.get('/get-notes', verifyValid, getNotes); // checked
+router.get('/get-notes/:id', verifyValid, getNotes); // checked
 router.delete('/delete-note/:id', verifyValid, deleteNote);
 router.put('/pin-note', verifyValid, pinNote);
-router.get('/get-categories', verifyValid, getCategories);
-router.get('/get-activities', verifyValid, getActivities);
+router.get('/get-categories/:id', verifyValid, getCategories);
+router.get('/get-activities/:id', verifyValid, getActivities);
 router.put('/add-fav', verifyValid, addFav);
 router.get('/get-categ', verifyValid, getCateg);
 router.put('/update-note', verifyValid, updateNotes);
